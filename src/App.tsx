@@ -1,3 +1,35 @@
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import Home from "./screens/Home";
+import Setup from "./screens/Setup";
+import Levels from "./screens/Levels";
+import MapScreen from "./screens/MapScreen";
+import Battle from "./screens/Battle";
+import { LEVELS, MONSTER, TOTAL_QUESTIONS, loadProgress, robotById, saveProgress, type Fighter, type ProgressMap, type RobotId } from "./data";
+import { setSoundEnabled } from "./sound";
+
+type Screen = "home" | "setup" | "levels" | "map" | "battle";
+
+const fade = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -16 },
+  transition: { duration: 0.3 },
+};
+
+export default function App() {
+  const [screen, setScreen] = useState<Screen>("home");
+  const [mode, setMode] = useState<1 | 2>(1);
+  const [picks, setPicks] = useState<RobotId[]>(["kuning", "biru"]);
+  const [levelId, setLevelId] = useState(1);
+  const [runKey, setRunKey] = useState(0);
+  const [progress, setProgress] = useState<ProgressMap>(() => loadProgress());
+  const [soundOn, setSoundOn] = useState(true);
+
+  useEffect(() => {
+    setSoundEnabled(soundOn);
+  }, [soundOn]);
+
   const totalStars = Object.values(progress).reduce((sum, p) => sum + (p?.bestStars ?? 0), 0);
   const fighters: [Fighter, Fighter] = mode === 1 ? [robotById(picks[0]), MONSTER] : [robotById(picks[0]), robotById(picks[1])];
   const toggleSound = () => setSoundOn((s) => !s);
